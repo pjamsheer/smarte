@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname
+from datetime import date
 from erpnext.setup.doctype.sms_settings.sms_settings import send_sms
 class OPSettings(Document):
 	pass
@@ -27,3 +28,26 @@ def send_registration_sms(doc, method):
 		messages = frappe.render_template(messages, context)
 		number = [doc.mobile]
 		send_sms(number,messages)
+
+def update_customer_age():
+	customers = frappe.get_all("Customer", fields=["name", "dob"])
+	for d in customers:
+		if d.name:
+			customer = frappe.get_doc("Customer", d.name)
+			if customer and customer.dob:
+				age = calculate_age(customer)
+				if(customer.age != age):
+					frappe.db.set_value("Customer", doc.name, "age", age)
+
+def calculate_age(doc):
+	born = doc.dob
+	today = date.today()
+
+	try:
+		birthday = born.replace(year=today.year)
+	except ValueError:# raised when birth date is February 29 and the current year is not a leap year
+		birthday = born.replace(year=today.year, day=born.day-1)
+	if birthday > today:
+		return today.year - born.year - 1
+	else:
+		return today.year - born.year

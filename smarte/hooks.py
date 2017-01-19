@@ -51,6 +51,9 @@ scheduler_events = {
  	],
  	"daily": [
  		"smarte.op.doctype.appointment.appointment.set_open_appointments"
+ 	],
+	"monthly": [
+ 		"smarte.op.doctype.op_settings.op_settings.update_customer_age"
  	]
 }
 
