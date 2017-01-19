@@ -21,9 +21,9 @@
   "docstatus": 0, 
   "doctype": "Custom Script", 
   "dt": "Customer", 
-  "modified": "2017-01-04 12:04:43.720529", 
+  "modified": "2017-01-19 14:22:54.580928", 
   "name": "Customer-Client", 
-  "script": "frappe.ui.form.on('Customer', {\n \trefresh: function(frm) {\n \t\tif(frm.doc.name && (frappe.user.has_role(\"IP Physician\")||frappe.user.has_role(\"OP Physician\"))){\n \t\t\tfrm.add_custom_button(__('View History'), function() { \n \t\t\t\tfrappe.route_options = {\"patient\": frm.doc.name}\n \t\t\t\tfrappe.set_route(\"medical_record\");\n \t\t\t });\n\t\t};\n \t}\n});", 
+  "script": "frappe.ui.form.on('Customer', {\n \trefresh: function(frm) {\n \t\tif(frm.doc.name && (frappe.user.has_role(\"IP Physician\")||frappe.user.has_role(\"OP Physician\"))){\n \t\t\tfrm.add_custom_button(__('View History'), function() {\n \t\t\t\tfrappe.route_options = {\"patient\": frm.doc.name}\n \t\t\t\tfrappe.set_route(\"medical_record\");\n \t\t\t });\n\t\t};\n }\n});\n\nfrappe.ui.form.on(\"Customer\", \"dob\", function(frm) {\n  if(frm.doc.dob && !frm.doc.age){\n    today = new Date();\n    birthDate = new Date(frm.doc.dob);\n    age = today.getFullYear() - birthDate.getFullYear();\n    m = today.getMonth() - birthDate.getMonth();\n    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {\n        age--;\n    }\n    frappe.model.set_value(frm.doctype,frm.docname, \"age\", age)\n    frm.set_df_property(\"age\", \"read_only\", 1);\n  }else if(!frm.doc.age){\n    frm.set_df_property(\"age\", \"read_only\", 0);\n  }\n});\n\nfrappe.ui.form.on(\"Customer\", \"age\", function(frm) {\n  if(frm.doc.age){\n    today = new Date()\n    dob_yr = today.getFullYear() - frm.doc.age\n    //dob_str = dob_yr+\"-01-01\"\n    dob_month = today.getMonth()+1\n    dob_str = dob_yr+\"-\"+dob_month+\"-\"+today.getDate()\n    frappe.model.set_value(frm.doctype,frm.docname, \"dob\", new Date(dob_str))\n    frm.set_df_property(\"age\", \"read_only\", 1);\n  }else{\n    frm.set_df_property(\"age\", \"read_only\", 0);\n  }\n});\n", 
   "script_type": "Client"
  }
 ]
