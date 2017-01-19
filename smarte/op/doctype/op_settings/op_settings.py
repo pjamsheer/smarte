@@ -30,17 +30,14 @@ def send_registration_sms(doc, method):
 		send_sms(number,messages)
 
 def update_customer_age():
-	customers = frappe.get_all("Customer", fields=["name", "dob"])
+	customers = frappe.get_all("Customer", fields=["name", "dob", "age"])
 	for d in customers:
-		if d.name:
-			customer = frappe.get_doc("Customer", d.name)
-			if customer and customer.dob:
-				age = calculate_age(customer)
-				if(customer.age != age):
-					frappe.db.set_value("Customer", doc.name, "age", age)
+		if d.name and d.dob:
+				age = calculate_age(d.dob)
+				if(d.age != age):
+					frappe.db.set_value("Customer", d.name, "age", age)
 
-def calculate_age(doc):
-	born = doc.dob
+def calculate_age(born):
 	today = date.today()
 
 	try:
