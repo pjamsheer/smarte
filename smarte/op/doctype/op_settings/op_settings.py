@@ -12,14 +12,14 @@ class OPSettings(Document):
 	pass
 
 
-def generate_patient_id(doc, method):
+def generate_patient_id(doc):
 	if (frappe.db.get_value("OP Settings", None, "patient_id")=='1'):
 		pid = make_autoname(frappe.db.get_value("OP Settings", None, "id_series"), "", doc)
 		doc.patient_id = pid
 		doc.save()
-	send_registration_sms(doc, method)
+	send_registration_sms(doc)
 
-def send_registration_sms(doc, method):
+def send_registration_sms(doc):
 	if (frappe.db.get_value("OP Settings", None, "reg_sms")=='1'):
 		context = {"doc": doc, "alert": doc, "comments": None}
 		if doc.get("_comments"):
@@ -29,13 +29,13 @@ def send_registration_sms(doc, method):
 		number = [doc.mobile]
 		send_sms(number,messages)
 
-def update_customer_age():
-	customers = frappe.get_all("Customer", fields=["name", "dob", "age"])
-	for d in customers:
+def update_patient_age():
+	patients = frappe.get_all("Patient", fields=["name", "dob", "age"])
+	for d in patients:
 		if d.name and d.dob:
 				age = calculate_age(d.dob)
 				if(d.age != age):
-					frappe.db.set_value("Customer", d.name, "age", age)
+					frappe.db.set_value("Patient", d.name, "age", age)
 
 def calculate_age(born):
 	today = date.today()
