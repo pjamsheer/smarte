@@ -35,13 +35,12 @@ website_context = {
 }
 
 doc_events = {
+'''
 	"Sales Invoice": {
 		"on_submit": "smarte.laboratory.doctype.lab_procedure.lab_procedure.create_lab_procedure_from_invoice_hook",
 		"on_cancel": "smarte.laboratory.doctype.lab_procedure.lab_procedure.invoice_cancel_hook",
-	},
-	"Customer": {
-		"after_insert": "smarte.op.doctype.op_settings.op_settings.generate_patient_id"
 	}
+'''
 }
 
 scheduler_events = {
