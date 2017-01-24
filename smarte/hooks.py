@@ -53,7 +53,7 @@ scheduler_events = {
  		"smarte.op.doctype.appointment.appointment.set_open_appointments"
  	],
 	"monthly": [
- 		"smarte.op.doctype.op_settings.op_settings.update_customer_age"
+ 		"smarte.op.doctype.op_settings.op_settings.update_patient_age"
  	]
 }
 
