@@ -34,14 +34,12 @@ website_context = {
 	"splash_image": "/assets/smarte/images/smarte.png"
 }
 
-doc_events = {
-'''
-	"Sales Invoice": {
-		"on_submit": "smarte.laboratory.doctype.lab_procedure.lab_procedure.create_lab_procedure_from_invoice_hook",
-		"on_cancel": "smarte.laboratory.doctype.lab_procedure.lab_procedure.invoice_cancel_hook",
-	}
-'''
-}
+#doc_events = {
+#	"Sales Invoice": {
+#		"on_submit": "smarte.laboratory.doctype.lab_procedure.lab_procedure.create_lab_procedure_from_invoice_hook",
+#		"on_cancel": "smarte.laboratory.doctype.lab_procedure.lab_procedure.invoice_cancel_hook",
+#	}
+#}
 
 scheduler_events = {
 	"all": [
