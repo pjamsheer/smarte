@@ -266,22 +266,6 @@ var btn_invoice_lab_test = function(frm){
 	});
 }
 
-//Restrict dropdown
-me.frm.set_query("test_code", "test_prescription", function(doc, cdt, cdn) {
-		return {
-			filters: {
-				billable_in:['in',['Laboratory']]
-			}
-		};
-	});
-me.frm.set_query("drug_code", "drug_prescription", function(doc, cdt, cdn) {
-		return {
-			filters: {
-				billable_in:['in',['Pharmacy']]
-			}
-		};
-	});
-
 me.frm.set_query("appointment", function(doc, cdt, cdn) {
 		return {
 			filters: {
