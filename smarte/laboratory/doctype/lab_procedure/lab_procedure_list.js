@@ -19,7 +19,7 @@ frappe.listview_settings['Lab Procedure'] = {
 					"label": "Sales Invoice",
 					"fieldname": "Sales Invoice",
 					"options": "Sales Invoice",
-					"get_query": {'lab_procedure_created' : 0, 'docstatus' : 1, 'billed_in': 'Laboratory'},
+					"get_query": {'docstatus' : 1},
 					"reqd": 1
 				}],
 			primary_action_label: __("Create Procedures"),
@@ -36,7 +36,7 @@ frappe.listview_settings['Lab Procedure'] = {
 		var create_test_from_template = function(sale_invoice){
 			frappe.call({
 				"method": "smarte.laboratory.doctype.lab_procedure.lab_procedure.create_lab_procedure_from_create_invoice_btn",
-				"args": {invoice : sale_invoice},           
+				"args": {invoice : sale_invoice},
 			    callback: function (data) {
 				if(!data.exc){
 					frappe.route_options = {"invoice": sale_invoice}
@@ -51,6 +51,3 @@ frappe.listview_settings['Lab Procedure'] = {
 	}
 
 };
-
-
-
