@@ -21,7 +21,7 @@ class Consultation(Document):
 
 		self.name = self.name + "-".join(filter(None,
 			[cstr(self.get(f)).strip() for f in ["physician", "consultation_time"]]))
-	
+
 	def on_update(self):
 		if(self.appointment):
 			frappe.db.set_value("Appointment",self.appointment,"status","Closed")
@@ -35,7 +35,7 @@ class Consultation(Document):
 	def on_submit(self):
 		physician = frappe.get_doc("Physician",self.physician)
 		if(frappe.session.user != physician.user_id):
-			frappe.throw(_("Submit only by created physician"))	
+			frappe.throw(_("Submit only by created physician"))
 
 def setting_sales_invoice_fields(consultation):
 	sales_invoice = frappe.new_doc("Sales Invoice")
@@ -44,9 +44,9 @@ def setting_sales_invoice_fields(consultation):
 	sales_invoice.ref_physician = consultation.ref_physician
 	sales_invoice.due_date = time.strftime("%m/%d/%Y")
 	sales_invoice.territory = "India"
-	
+
 	return sales_invoice
-	
+
 def create_sales_invoice_item_lines(item, sales_invoice):
 	sales_invoice_line = sales_invoice.append("items")
 	sales_invoice_line.item_code = item.item_code
@@ -59,7 +59,6 @@ def create_sales_invoice_item_lines(item, sales_invoice):
 def create_drug_invoice(consultationId):
 	consultation = frappe.get_doc("Consultation",consultationId)
 	sales_invoice = setting_sales_invoice_fields(consultation)
-	sales_invoice.billed_in = "Pharmacy"
 	sales_invoice.update_stock = 1
 
 	if(consultation.drug_prescription):
@@ -76,15 +75,14 @@ def create_drug_invoice(consultationId):
 def create_lab_test_invoice(consultationId):
 	consultation = frappe.get_doc("Consultation",consultationId)
 	sales_invoice = setting_sales_invoice_fields(consultation)
-	sales_invoice.billed_in = "Laboratory"
 	sales_invoice.update_stock = 0
-	
+
 	if(consultation.test_prescription):
 		for item_line in consultation.test_prescription:
 			if(item_line.test_code):
-				item = frappe.get_doc("Item", item_line.test_code)			
+				item = frappe.get_doc("Item", item_line.test_code)
 				create_sales_invoice_item_lines(item, sales_invoice)
-	
+
 	#income_account and cost_center in itemlines - by set_missing_values()
 	sales_invoice.set_missing_values()
 	return sales_invoice.as_dict()
@@ -93,7 +91,7 @@ def create_lab_test_invoice(consultationId):
 def create_inpatient(consultationId):
 	consultation = frappe.get_doc("Consultation",consultationId)
 	inpatient = frappe.new_doc("InPatients")
-	
+
 	inpatient.op_consultation_id = consultationId
 	inpatient.physician = consultation.physician
 	#inpatient has no field ref_physician
@@ -110,7 +108,7 @@ def create_inpatient(consultationId):
 	inpatient.save(ignore_permissions=True)
 
 	frappe.db.set_value("Consultation", consultationId, "admit_scheduled", True)
-	
+
 
 def schedule_task(consultation):
 	#Just chek if child exist : add to schedule task
@@ -145,10 +143,10 @@ def generate_schedules_for_lines(consultation, lines, drug_rx):
 		if line.update_schedule:
 			#delete scheduled records
 			frappe.db.sql("delete from `tabTask Schedule` where dt=%s and dn=%s", (line.doctype, line.name))
-			
-			if(line.period):	
+
+			if(line.period):
 				period = frappe.get_doc("Duration", line.period)
-			
+
 			if(drug_rx):
 				if(line.dosage):
 					dosage = frappe.get_doc("Dosage", line.dosage)
@@ -163,7 +161,7 @@ def generate_schedules_for_lines(consultation, lines, drug_rx):
 				if(line.number):
 					interval = line.number
 				item = line.routine_observation
-			
+
 			intvl_minutes = get_intrvl_minutes(interval, in_every)
 			times = create_date_time_list(period, intvl_minutes, dosage)
 			#schedule = {"t": {times}, "dt": line.doctype, "dn": line.name, "item": item ,"p_dt": consultation.doctype, "p_dn": consultation.name, "com": consultation.company, "inp":consultation.inpatient_id}
@@ -200,7 +198,7 @@ def create_date_time_list(period, intvl_minutes, dosage):
 			today = today + datetime.timedelta(minutes = intvl_minutes)
 			time = datetime.datetime.combine(today, datetime.datetime.min.time())
 		else:
-			#if u schedule with the start of the time append the time  and then add with time intrval 
+			#if u schedule with the start of the time append the time  and then add with time intrval
 			time = time+datetime.timedelta(minutes = intvl_minutes)
 			times.append(time)
 
@@ -238,9 +236,9 @@ def insert_consultation_to_medical_record(doc):
 def update_consultation_to_medical_record(consultation):
 	medical_record_id = frappe.db.sql("select name from `tabPatient Medical Record` where 			reference_name=%s",(consultation.name))
 	if(medical_record_id[0][0]):
-		subject = setting_subject_field(consultation)	
+		subject = setting_subject_field(consultation)
 		frappe.db.set_value("Patient Medical Record",medical_record_id[0][0],"subject",subject)
-	
+
 def setting_subject_field(consultation):
 	subject = "This Consultation do not have any diagnosis."
 	if(consultation.diagnosis):
@@ -248,25 +246,6 @@ def setting_subject_field(consultation):
 	if(consultation.drug_prescription):
 		subject +="\nDrug(s) Prescribed. "
 	if(consultation.test_prescription):
-		subject += " Test(s) Prescribed."	
-	
+		subject += " Test(s) Prescribed."
+
 	return subject
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

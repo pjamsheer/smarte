@@ -122,7 +122,6 @@ def make_consultation_invoice(appointment):
 	today = time.strftime("%d/%m/%y %H:%M:%S")
 	sales_invoice.due_date = getdate(today)
 	sales_invoice.territory = "India"
-	sales_invoice.billed_in = "OP"
 
 	item_line = sales_invoice.append("items")
 	item_line.item_code = "Consulting Charges"
