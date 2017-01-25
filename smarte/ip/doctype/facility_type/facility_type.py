@@ -49,7 +49,6 @@ def create_item(doc):
 	"item_name":doc.room_type,
 	"item_group": doc.item_group,
 	"description":doc.description,
-	"billable_in":"IP",
 	"is_sales_item": 1,
 	"is_purchase_item": 0,
 	"is_stock_item": 0,

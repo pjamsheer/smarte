@@ -21,7 +21,7 @@ class LabTestTemplate(Document):
 
 	def after_insert(self):
 		create_item_from_template(self)
-	
+
 	#Call before delete the template
 	def on_trash(self):
 		# get item
@@ -34,7 +34,7 @@ class LabTestTemplate(Document):
 
 			except Exception, e:
 				frappe.throw("""Please Disable the Test Template""")
-		
+
 
 def updating_item(self,item):
 	frappe.db.sql("""update `tabItem` set item_name=%s, item_group=%s, disabled=0,
@@ -43,7 +43,7 @@ def updating_item(self,item):
 def updating_test_rate(self,item):
 	frappe.db.sql("""update `tabItem Price` set item_name=%s, price_list_rate=%s, modified=NOW() where item_code=%s""",(self.test_name, self.test_rate, item.name))
 
-	
+
 def create_item_from_template(doc):
 	if(doc.is_billable == 1):
 		disabled = 0
@@ -57,7 +57,6 @@ def create_item_from_template(doc):
 	"item_group": doc.test_group,
 	"description":doc.test_description,
 	"test_template":doc.name,
-	"billable_in":"Laboratory",
 	"is_sales_item": 1,
 	"is_service_item": 1,
 	"is_purchase_item": 0,
@@ -101,12 +100,9 @@ def change_test_code_from_template(test_code, doc):
 		frappe.db.set_value("Lab Test Template",doc.name,"test_code",test_code)
 		frappe.rename_doc("Lab Test Template", doc.name, test_code, ignore_permissions = True)
 	return test_code
-		
+
 @frappe.whitelist()
 def disable_enable_test_template(status, name,  is_billable):
 	frappe.db.set_value("Lab Test Template",name,"disabled",status)
 	if(is_billable == 1):
 		frappe.db.set_value("Item",name,"disabled",status)
-	
-
-
