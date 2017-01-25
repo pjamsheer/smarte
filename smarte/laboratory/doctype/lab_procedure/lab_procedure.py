@@ -80,10 +80,8 @@ def create_lab_procedure(invoice, patient, template):
 	lab_procedure.result_date = time.strftime("%y/%m/%d")
 	lab_procedure.report_preference = patient.report_preference
 
-	is_inpatient = frappe.db.get_value("Customer", invoice.customer, "inpatient")
-
-	if is_inpatient:
-		service_unit = get_service_unit(invoice.customer, "procedure")
+	if patient.inpatient:
+		service_unit = get_service_unit(patient.inpatient_id, "procedure")
 		lab_procedure.service_unit = service_unit
 
 	return lab_procedure
@@ -150,18 +148,15 @@ def create_sample_collection(template, patient, invoice):
 			if(template.sample_collection_details):
 				sample_collection.sample_collection_details = "Test :"+template.test_name+"\n"+"Collection Detials:\n\t"+template.sample_collection_details
 
-			is_inpatient = frappe.db.get_value("Customer", invoice.customer, "inpatient")
-
-			if is_inpatient:
-				service_unit = get_service_unit(invoice.customer, "sample")
+			if patient.inpatient:
+				service_unit = get_service_unit(patient.inpatient_id, "sample")
 				sample_collection.service_unit = service_unit
 
 			sample_collection.save()
 
 		return sample_collection
 
-def get_service_unit(customer, job_type):
-	inpatient_id = frappe.db.get_value("Customer", customer, "inpatient_id")
+def get_service_unit(inpatient_id, job_type):
 	current_facility = frappe.get_value("InPatients", inpatient_id, "current_facility")
 	zone = frappe.get_value("Facility", current_facility, "zone")
 	service_unit = frappe.db.get_value("Service Unit List", {"parent": zone, job_type : 1}, "service_unit")
