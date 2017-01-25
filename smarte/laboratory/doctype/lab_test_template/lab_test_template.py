@@ -9,14 +9,13 @@ from frappe.model.document import Document
 class LabTestTemplate(Document):
 	def on_update(self):
 		#Item and Price List update --> if (change_in_item)
-		if(self.change_in_item and self.is_billable == 1):
-			item = frappe.db.get ("Item",{"test_template":self.name})
-			updating_item(self,item)
+		if(self.change_in_item and self.is_billable == 1 and self.item):
+			updating_item(self)
 			if(self.test_rate != 0.0):
-				updating_test_rate(self,item)
+				updating_test_rate(self)
 			frappe.db.set_value(self.doctype,self.name,"change_in_item",0)
-		elif(self.is_billable == 0):
-			frappe.db.set_value("Item",self.name,"disabled",1)
+		elif(self.is_billable == 0 and self.item):
+			frappe.db.set_value("Item",self.item,"disabled",1)
 		self.reload()
 
 	def after_insert(self):
@@ -24,24 +23,20 @@ class LabTestTemplate(Document):
 
 	#Call before delete the template
 	def on_trash(self):
-		# get item
-		item = frappe.db.get ("Item",{"test_template":self.name})
 		# remove template refernce from item and disable item
-		if(item):
-			frappe.db.set_value("Item",item.name,"test_template",'null')
+		if(self.item):
 			try:
-				frappe.delete_doc("Item",item.name)
-
+				frappe.delete_doc("Item",self.item)
 			except Exception, e:
 				frappe.throw("""Please Disable the Test Template""")
 
 
-def updating_item(self,item):
+def updating_item(self):
 	frappe.db.sql("""update `tabItem` set item_name=%s, item_group=%s, disabled=0,
 		description=%s, modified=NOW() where item_code=%s""",
-		(self.test_name, self.test_group , self.test_description, item.name))
-def updating_test_rate(self,item):
-	frappe.db.sql("""update `tabItem Price` set item_name=%s, price_list_rate=%s, modified=NOW() where item_code=%s""",(self.test_name, self.test_rate, item.name))
+		(self.test_name, self.test_group , self.test_description, self.item))
+def updating_test_rate(self):
+	frappe.db.sql("""update `tabItem Price` set item_name=%s, price_list_rate=%s, modified=NOW() where item_code=%s""",(self.test_name, self.test_rate, self.item))
 
 
 def create_item_from_template(doc):
@@ -75,6 +70,9 @@ def create_item_from_template(doc):
 			make_item_price(item.name, price_list_name, doc.test_rate)
 		else:
 			make_item_price(item.name, price_list_name, 0.0)
+	#Set item to the template
+	frappe.db.set_value("Lab Test Template", doc.name, "item", item.name)
+
 	doc.reload() #refresh the doc after insert.
 
 def make_item_price(item, price_list_name, item_price):
