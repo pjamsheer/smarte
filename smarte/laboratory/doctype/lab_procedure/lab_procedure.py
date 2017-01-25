@@ -58,8 +58,6 @@ def create_invoice_test_report(invoice, patient):
 	invoice_test_report.patient = patient.name
 	invoice_test_report.patient_age = patient.age
 	invoice_test_report.patient_sex = patient.sex
-	invoice_test_report.physician = invoice.physician
-	invoice_test_report.ref_physician = invoice.ref_physician
 	invoice_test_report.report_preference = patient.report_preference
 	return invoice_test_report
 
@@ -70,8 +68,6 @@ def create_lab_procedure(invoice, patient, template):
 	lab_procedure.patient = patient.name
 	lab_procedure.patient_age = patient.age
 	lab_procedure.patient_sex = patient.sex
-	lab_procedure.physician = invoice.physician
-	lab_procedure.ref_physician = invoice.ref_physician
 	lab_procedure.lab_test_type = template.lab_test_type
 	lab_procedure.internal_test = template.internal_test
 	lab_procedure.lab_procedure_department = template.lab_procedure_department
