@@ -35,7 +35,7 @@ def execute(filters=None):
 def get_columns():
 	columns = [
 		_("Test") + ":Data:120",
-		_("Patient") + ":Link/Customer:180",
+		_("Patient") + ":Link/Patient:180",
 		_("Doctor") + ":Link/Physician:120",
 		_("Invoice") + ":Link/Sales Invoice:120",
 		_("Status") + ":Data:120",
@@ -48,13 +48,13 @@ def get_columns():
 def get_conditions(filters):
 	conditions = ""
 
-	if filters.get("customer"): 
-		conditions += "and patient = %(customer)s"
-	if filters.get("from_date"): 
+	if filters.get("patient"):
+		conditions += "and patient = %(patient)s"
+	if filters.get("from_date"):
 		conditions += "and result_date >= %(from_date)s"
-	if filters.get("to_date"): 
+	if filters.get("to_date"):
 		conditions += " and result_date <= %(to_date)s"
-	if filters.get("lab_test_type"): 
+	if filters.get("lab_test_type"):
 		conditions += " and lab_test_type = %(lab_test_type)s"
 
 	return conditions
@@ -65,4 +65,3 @@ def get_lab_procedure(filters):
 		from `tabLab Procedure`
 		where docstatus<2 %s order by submitted_date desc, name desc""" %
 		conditions, filters, as_dict=1)
-

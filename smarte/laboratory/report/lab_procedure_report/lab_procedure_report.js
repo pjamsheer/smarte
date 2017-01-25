@@ -17,10 +17,10 @@ frappe.query_reports["Lab Procedure Report"] = {
 			"default": get_today()
 		},
 		{
-			"fieldname":"customer",
+			"fieldname":"patient",
 			"label": __("Patient"),
 			"fieldtype": "Link",
-			"options": "Customer"
+			"options": "Patient"
 		},
 		{
 			"fieldname":"lab_test_type",
