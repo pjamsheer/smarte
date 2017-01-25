@@ -192,12 +192,11 @@ def create_lab_procedure_from_invoice(doc):
 		collect_sample = 1
 
 	for item_line in doc.items:
-		item = frappe.get_doc("Item", item_line.item_code)
-		#skip the loop if there is no test_template for Item
-		if not (item.test_template):
-			continue
+		template = frappe.db.get("Lab Test Template",{"item":item_line.item_code})
 
-		template = frappe.get_doc("Lab Test Template", item.test_template)
+		#skip the loop if there is no test_template for Item
+		if not (template):
+			continue
 
 		lab_procedure = create_lab_procedure(doc, patient, template)
 		lab_procedure.email = patient_email
