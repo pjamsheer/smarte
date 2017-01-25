@@ -29,7 +29,7 @@ def facility_transfer_allocation(patient,inpatient,bed_number,facility_type, fac
 	update_facility(facility_name, patient, True)
 	#Old facility update
 	update_facility(old_facility_name, patient, False)
-	
+
 @frappe.whitelist()
 def discharge_patient(patient,inpatient):
 	update_customer(patient, inpatient, False)
@@ -48,7 +48,7 @@ def queue_discharge_patient(patient,inpatient):
 def cancel_scheduled_inpatient(inpatient):
 	frappe.db.set_value("InPatients",inpatient,"status","Cancelled")
 
-@frappe.whitelist()	
+@frappe.whitelist()
 def allocate_facility(patient,inpatient,date_in,time_in,bed,facility_type, facility, expected_discharge,status,occupied):
 	inpatients = frappe.get_doc("InPatients",inpatient)
 	#Validate the facility already occupied,leaved the previous patient when schedule and admit the patient to the facility
@@ -96,17 +96,16 @@ def create_inv_for_facility_used(patient,inpatient):
 	sales_invoice.physician = inpatients.physician
 	sales_invoice.due_date = time.strftime("%m/%d/%Y")
 	sales_invoice.territory = "India"
-	sales_invoice.billed_in = "IP"
-	
+
 	#Iterate for item and pass to the method
 	for item_line in inpatients.facility_alloc:
 		item = frappe.get_doc("Item", item_line.facility_type)
 		facility_type = frappe.get_doc("Facility Type", item_line.facility_type)
 		day_hours = facility_type.per
-		
+
 		period_start = getdate(item_line.date_in)
 		if(item_line.expected_discharge):
-			period_end = getdate(item_line.expected_discharge)		
+			period_end = getdate(item_line.expected_discharge)
 		else:
 			today = time.strftime("%d/%m/%y %H:%M:%S")
 			period_end = getdate(today)
@@ -114,9 +113,9 @@ def create_inv_for_facility_used(patient,inpatient):
 		if(day_hours == "Day"):
 			qty = no_of_days
 		else:
-			qty = no_of_days*24	
-		
-		
+			qty = no_of_days*24
+
+
 		price_list = frappe.db.get ("Item Price",{"item_code":item.item_code})
 		rate = price_list.price_list_rate
 
@@ -125,7 +124,7 @@ def create_inv_for_facility_used(patient,inpatient):
 	#income_account and cost_center in itemlines - by set_missing_values()
 	sales_invoice.set_missing_values()
 	return sales_invoice.as_dict()
-	
+
 def create_sales_invoice_item_lines(item, sales_invoice, qty, rate):
 	sales_invoice_line = sales_invoice.append("items")
 	sales_invoice_line.item_code = item.item_code
@@ -152,7 +151,7 @@ def create_discharge_summary(inpatient):
 def disallocate_facility_bed(inpatient):
 	inpatients = frappe.get_doc("InPatients",inpatient)
 	for allocation in inpatients.facility_alloc:
-		allocation.status = "Left" 
+		allocation.status = "Left"
 	inpatients.save()
 
 def update_customer(patient, inpatient, admit):
@@ -174,11 +173,10 @@ def update_facility(facility, patient, admit):
 			num_occupied = facility.num_occupied+1
 		else:
 			num_occupied = facility.num_occupied-1
-		
+
 		if(num_occupied == facility.num_beds):
 			occupied = True
 		else:
 			occupied = False
-		
+
 		frappe.db.sql("""update `tabFacility` set num_occupied=%s, occupied=%s where name=%s""",(num_occupied,occupied,facility.name))
-	
