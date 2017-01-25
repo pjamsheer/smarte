@@ -20,11 +20,11 @@ def execute(filters=None):
 	invoice_income_map, invoice_tax_map = get_invoice_tax_map(invoice_list,
 		invoice_income_map, income_accounts)
 
-	
+
 	data = []
 	for inv in invoice_list:
 		# invoice details
-		
+
 		row = [inv.name, inv.posting_date, inv.customer,
 		inv.debit_to]
 
@@ -102,7 +102,7 @@ def get_invoices(filters):
 	return frappe.db.sql("""select name, posting_date, debit_to, customer,
 		base_net_total, base_grand_total, base_rounded_total, outstanding_amount
 		from `tabSales Invoice`
-		where docstatus = 1 and billed_in = 'Pharmacy' %s order by posting_date desc, name desc""" %
+		where docstatus = 1 and %s order by posting_date desc, name desc""" %
 		conditions, filters, as_dict=1)
 
 def get_invoice_income_map(invoice_list):
@@ -135,4 +135,3 @@ def get_invoice_tax_map(invoice_list, invoice_income_map, income_accounts):
 			invoice_tax_map[d.parent][d.account_head] = flt(d.tax_amount)
 
 	return invoice_income_map, invoice_tax_map
-
