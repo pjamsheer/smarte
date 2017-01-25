@@ -161,7 +161,7 @@ def get_service_unit(inpatient_id, job_type):
 # Call From hook to Create Test Result and Procedure.
 @frappe.whitelist()
 def create_lab_procedure_from_invoice_hook(doc, method):
-	if(frappe.db.get_value("Laboratory Settings", None, "automate_lab_procedure_creation") == "1" and  doc.billed_in == 'Laboratory'):
+	if(frappe.db.get_value("Laboratory Settings", None, "automate_lab_procedure_creation") == "1"):
 		create_lab_procedure_from_invoice(doc)
 
 # Call From Create From Invoice Btn to Create Test Result and Procedure.
