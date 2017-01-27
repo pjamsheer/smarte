@@ -10,6 +10,7 @@ def get_notification_config():
 			"Sample Collection": {"docstatus": 0},
 			"Appointment": {"status": "Open"},
 			"Service Task": {"status": "Open"},
-			"Consultation": {"docstatus": 0}
+			"Consultation": {"docstatus": 0},
+			"Patient": {"status": "Active"}
 		}
 	}
