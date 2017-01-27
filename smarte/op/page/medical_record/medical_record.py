@@ -9,15 +9,15 @@ from frappe.utils import cint
 def get_feed(limit_start, limit_page_length, name):
 	"""get feed"""
 	result = frappe.db.sql("""select name, owner, modified, creation,
-			reference_doctype, reference_name, subject 
+			reference_doctype, reference_name, subject
 		from `tabPatient Medical Record`
-		where patient=%(customer)s
+		where patient=%(patient)s
 		order by creation desc
 		limit %(limit_start)s, %(limit_page_length)s""",
 		{
 			"limit_start": cint(limit_start),
 			"limit_page_length": cint(limit_page_length),
-			"customer": name
+			"patient": name
 		}, as_dict=True)
 
 	return result

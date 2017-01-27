@@ -17,22 +17,22 @@ frappe.pages['medical_record'].on_page_load = function(wrapper) {
 
 
 	page.main.html(frappe.render_template("customer_select", {}));
-	var customer = frappe.ui.form.make_control({
-		parent: page.main.find(".customer"),
+	var patient = frappe.ui.form.make_control({
+		parent: page.main.find(".patient"),
 		df: {
 			fieldtype: "Link",
-			options: "Customer",
-			fieldname: "customer",
+			options: "Patient",
+			fieldname: "patient",
 			change: function(){
 				//frappe-list is the class of div in the html page.
 				page.main.find(".frappe-list").html("");
-				show_patient_info(customer.get_value(), me);
-				draw_page(customer.get_value(), me);
+				show_patient_info(patient.get_value(), me);
+				draw_page(patient.get_value(), me);
 			}
 		},
 		only_input: true,
 	});
-	customer.refresh();
+	patient.refresh();
 
 
 	this.page.main.on("click", ".medical_record-message", function() {
@@ -48,9 +48,9 @@ frappe.pages['medical_record'].on_page_load = function(wrapper) {
 	});
 
 	this.page.sidebar.on("click", ".edit-details", function() {
-		patient = customer.get_value();
+		patient = patient.get_value();
 		if (patient) {
-			frappe.set_route(["Form", "Customer", patient]);
+			frappe.set_route(["Form", "Patient", patient]);
 		}
 	});
 
@@ -62,20 +62,20 @@ frappe.pages['medical_record'].refresh = function(wrapper) {
 	if(frappe.route_options) {
 		if(frappe.route_options.patient){
 			me.page.main.find(".frappe-list").html("");
-			customer = frappe.route_options.patient;
-			show_patient_info(customer, me);
-			draw_page(customer,me);
-			me.page.main.find("[data-fieldname='customer']").val(customer);
+			patient = frappe.route_options.patient;
+			show_patient_info(patient, me);
+			draw_page(patient,me);
+			me.page.main.find("[data-fieldname='patient']").val(patient);
 			frappe.route_options = null;
 		}
 	}
 }
-var show_patient_info = function(customer, me){
+var show_patient_info = function(patient, me){
 	frappe.call({
 		    "method": "frappe.client.get",
 		    args: {
-		        doctype: "Customer",
-		        name: customer
+		        doctype: "Patient",
+		        name: patient
 		    },
 		    callback: function (data) {
 					var details = "<div style='padding-left:10px;'></br><b>Patient Details</b><br>";
@@ -95,7 +95,7 @@ var show_patient_info = function(customer, me){
 					if(data.message.surgical_history) details +=  "<br><b>Surgical history : </b>"+  data.message.surgical_history;
 					if(data.message.surrounding_factors) details +=  "<br><br><b>Occupational hazards : </b>"+  data.message.surrounding_factors;
 					if(data.message.other_risk_factors) details += "<br><b>Other risk factors : </b>" + data.message.other_risk_factors;
-					if(data.message.customer_details) details += "<br><br><b>More info : </b>" + data.message.customer_details;
+					if(data.message.patient_details) details += "<br><br><b>More info : </b>" + data.message.patient_details;
 					if(details !== "") details += "<br><br><a class='btn btn-default btn-sm edit-details'>Edit Details</a></b> </div>"
 					me.page.sidebar.addClass("col-sm-3");
 					me.page.sidebar.html(details);
@@ -103,13 +103,13 @@ var show_patient_info = function(customer, me){
 		    }
 		})
 }
-var draw_page = function(customer,me){
+var draw_page = function(patient,me){
 	frappe.model.with_doctype("Patient Medical Record", function() {
 		me.page.list = new frappe.ui.Listing({
 			hide_refresh: true,
 			page: me.page,
 			method: 'smarte.op.page.medical_record.medical_record.get_feed',
-			args: {name: customer},
+			args: {name: patient},
 			parent: $("<div></div>").appendTo(me.page.main),
 			render_row: function(row, data) {
 				new frappe.medical_record.Feed(row, data);
