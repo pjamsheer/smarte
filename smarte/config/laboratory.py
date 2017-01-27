@@ -10,7 +10,7 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Customer",
+					"name": "Patient",
 					"label": _("Patient"),
 					"description": _("Patient."),
 				},

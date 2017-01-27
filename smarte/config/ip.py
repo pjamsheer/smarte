@@ -21,7 +21,7 @@ def get_data():
 				},
 				{
 					"type": "doctype",
-					"name": "Customer",
+					"name": "Patient",
 					"label": _("Patients"),
 					"description": _("Patients"),
 				},
