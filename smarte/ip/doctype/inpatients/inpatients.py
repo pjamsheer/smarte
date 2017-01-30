@@ -15,7 +15,7 @@ class InPatients(Document):
 @frappe.whitelist()
 def admit_and_allocate_patient(patient, inpatient, date_in, time_in, bed, facility_type, facility, expected_discharge):
 	allocate_facility(patient,inpatient,date_in,time_in,bed,facility_type, facility, expected_discharge,"Occupied",True)
-	update_customer(patient, inpatient, True)
+	update_patient(patient, inpatient, True)
 	update_bed(bed, patient, True)
 	update_facility(facility, patient, True)
 	frappe.db.set_value("InPatients",inpatient,"status","Admitted")
@@ -32,7 +32,7 @@ def facility_transfer_allocation(patient,inpatient,bed_number,facility_type, fac
 
 @frappe.whitelist()
 def discharge_patient(patient,inpatient):
-	update_customer(patient, inpatient, False)
+	update_patient(patient, inpatient, False)
 	disallocate_facility_bed(inpatient)
 	inpatients = frappe.get_doc("InPatients",inpatient)
 	update_facility(inpatients.current_facility, patient, False)
@@ -92,7 +92,8 @@ def create_consultation(patient,inpatient):
 def create_inv_for_facility_used(patient,inpatient):
 	inpatients = frappe.get_doc("InPatients",inpatient)
 	sales_invoice = frappe.new_doc("Sales Invoice")
-	sales_invoice.customer = inpatients.patient
+	#sales_invoice - custom field - patient
+	sales_invoice.patient = inpatients.patient
 	sales_invoice.physician = inpatients.physician
 	sales_invoice.due_date = time.strftime("%m/%d/%Y")
 	sales_invoice.territory = "India"
@@ -154,11 +155,11 @@ def disallocate_facility_bed(inpatient):
 		allocation.status = "Left"
 	inpatients.save()
 
-def update_customer(patient, inpatient, admit):
+def update_patient(patient, inpatient, admit):
 	if(admit):
-		frappe.db.sql("""update `tabCustomer` set inpatient=%s, inpatient_id=%s where name=%s""",(True,inpatient,patient))
+		frappe.db.sql("""update `tabPatient` set inpatient=%s, inpatient_id=%s where name=%s""",(True,inpatient,patient))
 	else:
-		frappe.db.sql("""update `tabCustomer` set inpatient=%s, inpatient_id=%s where name=%s""",(False,None,patient))
+		frappe.db.sql("""update `tabPatient` set inpatient=%s, inpatient_id=%s where name=%s""",(False,None,patient))
 
 def update_bed(bed, patient, admit):
 	if(not admit):

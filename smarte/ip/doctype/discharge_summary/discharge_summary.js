@@ -3,8 +3,8 @@
 
 frappe.ui.form.on('Discharge Summary', {
 	refresh: function(frm) {
-		frm.add_custom_button(__('View Inpatient'), function() { 
-			frappe.set_route("Form", "InPatients", frm.doc.inpatient);			
+		frm.add_custom_button(__('View Inpatient'), function() {
+			frappe.set_route("Form", "InPatients", frm.doc.inpatient);
 		} );
 	}
 });
@@ -50,7 +50,7 @@ frappe.ui.form.on("Discharge Summary", "patient",
 		frappe.call({
 		    "method": "frappe.client.get",
 		    args: {
-		        doctype: "Customer",
+		        doctype: "Patient",
 		        name: frm.doc.patient
 		    },
 		    callback: function (data) {

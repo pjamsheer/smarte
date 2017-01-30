@@ -36,7 +36,8 @@ frappe.ui.form.on('InPatients', {
 				frappe.set_route("List", "Consultation");
 			});*/
 			frm.add_custom_button(__('Pending Invoices'), function() {
-				frappe.route_options = {"customer": frm.doc.patient, "status":['in',["Unpaid","Overdue"]]}
+				//Seles invoice - custom field - patient
+				frappe.route_options = {"patient": frm.doc.patient, "status":['in',["Unpaid","Overdue"]]}
 				frappe.set_route("List", "Sales Invoice");
 			} );
 			frm.add_custom_button(__("Discharge"),function(){
@@ -388,8 +389,8 @@ var facility_transfer_allocate = function(frm){
 	var transfer_and_allocate = function(bed_number,facility_type,facility_name,expected_discharge){
 		frappe.call({
 			"method": "smarte.ip.doctype.inpatients.inpatients.facility_transfer_allocation",
-			"args": {patient: doc.patient, inpatient: doc.name, bed_number: bed_number, 
-				facility_type: facility_type, facility_name: facility_name, 
+			"args": {patient: doc.patient, inpatient: doc.name, bed_number: bed_number,
+				facility_type: facility_type, facility_name: facility_name,
 				expected_discharge: expected_discharge, old_facility_name: frm.doc.current_facility},
 			callback: function(r){
 				cur_frm.reload_doc();
@@ -511,7 +512,7 @@ frappe.ui.form.on("InPatients", "patient",
 		frappe.call({
 		    "method": "frappe.client.get",
 		    args: {
-		        doctype: "Customer",
+		        doctype: "Patient",
 		        name: frm.doc.patient
 		    },
 		    callback: function (data) {
