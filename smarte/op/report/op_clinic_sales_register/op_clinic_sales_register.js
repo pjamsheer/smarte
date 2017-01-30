@@ -18,10 +18,10 @@ frappe.query_reports["OP Sales Register"] = {
 			"default": get_today()
 		},
 		{
-			"fieldname":"customer",
-			"label": __("Customer"),
+			"fieldname":"patient",
+			"label": __("Patient"),
 			"fieldtype": "Link",
-			"options": "Customer"
+			"options": "Patient"
 		}
 	]
 }

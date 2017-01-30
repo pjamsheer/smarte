@@ -25,7 +25,7 @@ def execute(filters=None):
 	for inv in invoice_list:
 		# invoice details
 
-		row = [inv.name, inv.posting_date, inv.customer,
+		row = [inv.name, inv.posting_date, inv.patient,
 		inv.debit_to]
 
 		# map income values
@@ -58,7 +58,7 @@ def get_columns(invoice_list):
 	"""return columns based on filters"""
 	columns = [
 		_("Invoice") + ":Link/Sales Invoice:120", _("Posting Date") + ":Date:80",
-		_("Customer") + ":Link/Customer:120",
+		_("Patient") + ":Link/Patient:120",
 		_("Receivable Account") + ":Link/Account:120"
 	]
 
@@ -90,7 +90,7 @@ def get_columns(invoice_list):
 def get_conditions(filters):
 	conditions = ""
 
-	if filters.get("customer"): conditions += "and customer = %(customer)s"
+	if filters.get("patient"): conditions += "and patient = %(patient)s"
 
 	if filters.get("from_date"): conditions += " and posting_date >= %(from_date)s"
 	if filters.get("to_date"): conditions += " and posting_date <= %(to_date)s"
@@ -99,7 +99,7 @@ def get_conditions(filters):
 
 def get_invoices(filters):
 	conditions = get_conditions(filters)
-	return frappe.db.sql("""select name, posting_date, debit_to, customer,
+	return frappe.db.sql("""select name, posting_date, debit_to, patient,
 		base_net_total, base_grand_total, base_rounded_total, outstanding_amount
 		from `tabSales Invoice`
 		where docstatus = 1 %s order by posting_date desc, name desc""" %
