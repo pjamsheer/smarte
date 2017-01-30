@@ -39,7 +39,8 @@ class Consultation(Document):
 
 def setting_sales_invoice_fields(consultation):
 	sales_invoice = frappe.new_doc("Sales Invoice")
-	sales_invoice.customer = consultation.patient
+	# patient is custom field in sales inv.
+	sales_invoice.patient = consultation.patient
 	sales_invoice.physician = consultation.physician
 	sales_invoice.ref_physician = consultation.ref_physician
 	sales_invoice.due_date = time.strftime("%m/%d/%Y")

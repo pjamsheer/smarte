@@ -22,7 +22,7 @@ frappe.ui.form.on('Consultation', {
 			frappe.call({
 					"method": "frappe.client.get",
 					args: {
-							doctype: "Customer",
+							doctype: "Patient",
 							name: frm.doc.patient
 					},
 					callback: function (data) {
@@ -47,12 +47,12 @@ frappe.ui.form.on('Consultation', {
 		cur_frm.set_query("patient", function () {
 			if(frm.doc.inpatient){
 				return {
-					query : "smarte.smarte.queries.customer_query",
+					//query : "smarte.smarte.queries.customer_query",
 					filters: {"inpatient": 1}
 				}
 			}else{
 				return {
-					query : "smarte.smarte.queries.customer_query",
+					//query : "smarte.smarte.queries.customer_query",
 					filters: {"inpatient": 0}
 				}
 			}
@@ -113,7 +113,7 @@ var show_details = function(data){
 	if(data.surgical_history) details +=  "<br><b>Surgical history : </b>"+  data.surgical_history;
 	if(data.surrounding_factors) details +=  "<br><br><b>Occupational hazards : </b>"+  data.surrounding_factors;
 	if(data.other_risk_factors) details += "<br><b>Other risk factors : </b>" + data.other_risk_factors;
-	if(data.customer_details) details += "<br><br><b>More info : </b>" + data.customer_details;
+	if(data.patient_details) details += "<br><br><b>More info : </b>" + data.patient_details;
 	details += "</div>"
 	//escape / in div id with \\ -ROF
 	$('#page-Form\\/Consultation').find('.layout-side-section').html(details);
@@ -160,7 +160,7 @@ frappe.ui.form.on("Consultation", "patient",
 		frappe.call({
 		    "method": "frappe.client.get",
 		    args: {
-		        doctype: "Customer",
+		        doctype: "Patient",
 		        name: frm.doc.patient
 		    },
 		    callback: function (data) {

@@ -116,7 +116,8 @@ def create_fee_validity(appointment):
 def make_consultation_invoice(appointment):
 	physician = frappe.get_doc("Physician",appointment.physician)
 	sales_invoice = frappe.new_doc("Sales Invoice")
-	sales_invoice.customer = appointment.patient
+	#patient is custom field in sales inv.
+	sales_invoice.patient = appointment.patient
 	sales_invoice.physician = appointment.physician
 	sales_invoice.ref_physician = appointment.ref_physician
 	today = time.strftime("%d/%m/%y %H:%M:%S")
@@ -161,7 +162,7 @@ def remind_appointment():
 			frappe.db.set_value("Appointment",doc.name,"reminded",1)
 
 def send_message(doc, messages):
-	patient = frappe.get_doc("Customer",doc.patient)
+	patient = frappe.get_doc("Patient",doc.patient)
 	if(patient.mobile):
 		context = {"doc": doc, "alert": doc, "comments": None}
 		if doc.get("_comments"):
