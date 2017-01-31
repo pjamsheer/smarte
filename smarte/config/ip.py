@@ -10,9 +10,9 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "InPatients",
-					"label": _("InPatients"),
-					"description": _("Inpatient Registration"),
+					"name": "Patient Admission",
+					"label": _("Patient Admission"),
+					"description": _("Patient Admission"),
 				},
 				{
 					"type": "doctype",
@@ -51,7 +51,6 @@ def get_data():
 					"type": "doctype",
 					"name": "Floor",
 					"label": _("Floor"),
-					"description": _("Inpatient Registration"),
 				},
 				{
 					"type": "doctype",
