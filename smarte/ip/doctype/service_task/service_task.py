@@ -24,8 +24,8 @@ def create_task_from_schedule():
 				job_type = "nursing"
 			elif(schedule.dt == "IP Routine Observation"):
 				job_type = "routine"
-			if(schedule.inpatient):
-				facility, patient = frappe.get_value("InPatients", {"name": schedule.inpatient}, ["current_facility", "patient"])
+			if(schedule.admission):
+				facility, patient = frappe.get_value("Patient Admission", {"name": schedule.admission}, ["current_facility", "patient"])
 				zone = frappe.get_value("Facility", {"name": facility}, ["zone"])
 				service_unit, unit_type = frappe.db.get_value("Service Unit List", {"parent": zone, job_type : 1}, ("service_unit", "type"))
 				line = frappe.get_doc(schedule.dt, schedule.dn)

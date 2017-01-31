@@ -45,15 +45,13 @@ frappe.ui.form.on('Consultation', {
 			} );
 		}
 		cur_frm.set_query("patient", function () {
-			if(frm.doc.inpatient){
+			if(frm.doc.admitted){
 				return {
-					//query : "smarte.smarte.queries.customer_query",
-					filters: {"inpatient": 1}
+					filters: {"admitted": 1}
 				}
 			}else{
 				return {
-					//query : "smarte.smarte.queries.customer_query",
-					filters: {"inpatient": 0}
+					filters: {"admitted": 0}
 				}
 			}
 		});
@@ -67,7 +65,7 @@ frappe.ui.form.on('Consultation', {
 		frm.set_df_property("visit_department", "read_only", frm.doc.__islocal ? 0:1);
 		frm.set_df_property("consultation_date", "read_only", frm.doc.__islocal ? 0:1);
 		frm.set_df_property("consultation_time", "read_only", frm.doc.__islocal ? 0:1);
-		if(frm.doc.inpatient){
+		if(frm.doc.admitted){
 			frm.set_df_property("appointment", "hidden", 1);
 		}else{
 			frm.set_df_property("appointment", "hidden", 0);
@@ -85,7 +83,7 @@ frappe.ui.form.on('Consultation', {
 					btn_invoice_lab_test(frm);
 				 },__("Create") );
 			}
-			if(!frm.doc.inpatient && !frm.doc.admit_scheduled){
+			if(!frm.doc.admitted && !frm.doc.admit_scheduled){
 				frm.add_custom_button(__('Admit Patient'), function() {
 					btn_admit_patient(frm);
 				 });
@@ -166,9 +164,9 @@ frappe.ui.form.on("Consultation", "patient",
 		    callback: function (data) {
 					frappe.model.set_value(frm.doctype,frm.docname, "patient_age", data.message.age)
 					frappe.model.set_value(frm.doctype,frm.docname, "patient_sex", data.message.sex)
-					frappe.model.set_value(frm.doctype,frm.docname, "inpatient", data.message.inpatient)
-					if(data.message.inpatient){
-						frappe.model.set_value(frm.doctype,frm.docname, "inpatient_id", data.message.inpatient_id)
+					frappe.model.set_value(frm.doctype,frm.docname, "admitted", data.message.admitted)
+					if(data.message.admitted){
+						frappe.model.set_value(frm.doctype,frm.docname, "admission", data.message.admission)
 					}
 					if(frm.doc.__islocal) show_details(data.message);
 		    }
@@ -241,11 +239,11 @@ var btn_invoice_drug = function(frm){
 var btn_admit_patient = function(frm){
 	var doc = frm.doc;
 	frappe.call({
-		method:"smarte.op.doctype.consultation.consultation.create_inpatient",
+		method:"smarte.op.doctype.consultation.consultation.admit_patient",
 		args: {consultationId: doc.name},
 		callback: function(data){
 			if(!data.exc){
-				frappe.msgprint("Patient scheduled for admition");
+				frappe.msgprint("Patient scheduled for admission");
 				cur_frm.reload_doc()
 			}
 		}

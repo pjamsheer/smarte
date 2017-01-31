@@ -26,7 +26,7 @@ class Consultation(Document):
 		if(self.appointment):
 			frappe.db.set_value("Appointment",self.appointment,"status","Closed")
 		update_consultation_to_medical_record(self)
-		if(self.inpatient):
+		if(self.admitted):
 			schedule_task(self)
 
 	def after_insert(self):
@@ -89,24 +89,24 @@ def create_lab_test_invoice(consultationId):
 	return sales_invoice.as_dict()
 
 @frappe.whitelist()
-def create_inpatient(consultationId):
+def admit_patient(consultationId):
 	consultation = frappe.get_doc("Consultation",consultationId)
-	inpatient = frappe.new_doc("InPatients")
+	patient_admission = frappe.new_doc("Patient Admission")
 
-	inpatient.op_consultation_id = consultationId
-	inpatient.physician = consultation.physician
-	#inpatient has no field ref_physician
-	#inpatient.ref_physician = consultation.ref_physician
-	inpatient.visit_department = consultation.visit_department
-	inpatient.status = "Scheduled"
-	inpatient.company = consultation.company
-	inpatient.patient = consultation.patient
-	inpatient.patient_age = consultation.patient_age
-	inpatient.patient_sex = consultation.patient_sex
-	inpatient.complaints = consultation.symptoms
-	inpatient.vitals = consultation.vitals
-	inpatient.diagnosis = consultation.diagnosis
-	inpatient.save(ignore_permissions=True)
+	patient_admission.op_consultation_id = consultationId
+	patient_admission.physician = consultation.physician
+	#patient_admission has no field ref_physician
+	#patient_admission.ref_physician = consultation.ref_physician
+	patient_admission.visit_department = consultation.visit_department
+	patient_admission.status = "Scheduled"
+	patient_admission.company = consultation.company
+	patient_admission.patient = consultation.patient
+	patient_admission.patient_age = consultation.patient_age
+	patient_admission.patient_sex = consultation.patient_sex
+	patient_admission.complaints = consultation.symptoms
+	patient_admission.vitals = consultation.vitals
+	patient_admission.diagnosis = consultation.diagnosis
+	patient_admission.save(ignore_permissions=True)
 
 	frappe.db.set_value("Consultation", consultationId, "admit_scheduled", True)
 
@@ -165,9 +165,8 @@ def generate_schedules_for_lines(consultation, lines, drug_rx):
 
 			intvl_minutes = get_intrvl_minutes(interval, in_every)
 			times = create_date_time_list(period, intvl_minutes, dosage)
-			#schedule = {"t": {times}, "dt": line.doctype, "dn": line.name, "item": item ,"p_dt": consultation.doctype, "p_dn": consultation.name, "com": consultation.company, "inp":consultation.inpatient_id}
 			for i in range(0, len(times)):
-				schedule = {"t": times[i], "dt": line.doctype, "dn": line.name, "item": item ,"p_dt": consultation.doctype, "p_dn": consultation.name, "com": consultation.company, "inp":consultation.inpatient_id}
+				schedule = {"t": times[i], "dt": line.doctype, "dn": line.name, "item": item ,"p_dt": consultation.doctype, "p_dn": consultation.name, "com": consultation.company, "admission":consultation.admission}
 				data.append(schedule)
 			line.update_schedule = 0
 	return data
@@ -216,7 +215,7 @@ def create_task_schedule(sch_list):
 			task_schedule.parent_doc = line["p_dt"]
 			task_schedule.parent_id = line["p_dn"]
 			task_schedule.company = line["com"]
-			task_schedule.inpatient = line["inp"]
+			task_schedule.patient_admission = line["admission"]
 			task_schedule.physician = ""
 			task_schedule.comment = line["item"]
 			task_schedule.open = True

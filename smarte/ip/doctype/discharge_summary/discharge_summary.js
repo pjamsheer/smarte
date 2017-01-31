@@ -3,20 +3,20 @@
 
 frappe.ui.form.on('Discharge Summary', {
 	refresh: function(frm) {
-		frm.add_custom_button(__('View Inpatient'), function() {
-			frappe.set_route("Form", "InPatients", frm.doc.inpatient);
+		frm.add_custom_button(__('View Admission'), function() {
+			frappe.set_route("Form", "Patient Admission", frm.doc.admission);
 		} );
 	}
 });
 
-frappe.ui.form.on("Discharge Summary", "inpatient",
+frappe.ui.form.on("Discharge Summary", "admission",
     function(frm) {
-	if(frm.doc.inpatient){
+	if(frm.doc.admission){
 		frappe.call({
 		    "method": "frappe.client.get",
 		    args: {
-		        doctype: "InPatients",
-		        name: frm.doc.inpatient
+		        doctype: "Patient Admission",
+		        name: frm.doc.admission
 		    },
 		    callback: function (data) {
 				frappe.model.set_value(frm.doctype,frm.docname, "patient", data.message.patient)
