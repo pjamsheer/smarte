@@ -17,7 +17,7 @@ erpnext.AppointmentAnalytics = frappe.views.TreeGridReport.extend({
 			page: wrapper,
 			parent: $(wrapper).find('.layout-main'),
 			page: wrapper.page,
-			doctypes: ["Appointment", "Physician", "Department", "Appointment Type", "Customer"],
+			doctypes: ["Appointment", "Physician", "Department", "Appointment Type", "Patient"],
 			tree_grid: { show: true }
 		});
 
@@ -60,10 +60,10 @@ erpnext.AppointmentAnalytics = frappe.views.TreeGridReport.extend({
 		{fieldtype:"Select", label: __("Tree Type"), fieldname: "tree_type",
 			options:["Physician", "Department"], filter: function(val, item, opts, me) {
 				return me.apply_zero_filter(val, item, opts, me);}},
-		{fieldtype:"Select", label: __("Status"), fieldname: "status", 
+		{fieldtype:"Select", label: __("Status"), fieldname: "status",
 			options:[
-				{label: __("Select Status"), value: "Select Status..."}, 
-				{label: __("Open"), value: "Open"}, 
+				{label: __("Select Status"), value: "Select Status..."},
+				{label: __("Open"), value: "Open"},
 				{label: __("Closed"), value: "Closed"},
 				{label: __("Pending"), value: "Pending"}]},
 		{fieldtype:"Select", label: __("Type"), link:"Appointment Type", fieldname: "type",
@@ -154,7 +154,7 @@ erpnext.AppointmentAnalytics = frappe.views.TreeGridReport.extend({
 				if (date >= from_date && date <= to_date) {
 					var item = me.item_by_name[tl[me.tree_grid.item_key]] ||
 						me.item_by_name['Not Set'];
-					
+
 					var d = tl.start_dt.split(" ")[0];
 					if(status == "Select Status..." && type=="Select Type...")
 					{

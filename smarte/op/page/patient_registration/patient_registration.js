@@ -18,7 +18,7 @@ erpnext.RegistrationAnalytics = frappe.views.TreeGridReport.extend({
 			page: wrapper,
 			parent: $(wrapper).find('.layout-main'),
 			page: wrapper.page,
-			doctypes: ["Customer", "User"],
+			doctypes: ["Patient", "User"],
 			tree_grid: { show: true }
 		});
 
@@ -56,7 +56,7 @@ erpnext.RegistrationAnalytics = frappe.views.TreeGridReport.extend({
 		{fieldtype:"Select", label: __("User"), link:"User", fieldname: "filter_user",
 			default_value: __("Select User..."), filter: function(val, item, opts) {
 				return val == opts.default_value || item.name == val || item._show;
-			}, link_formatter: {filter_input: "name"}},		
+			}, link_formatter: {filter_input: "name"}},
 		{fieldtype:"Date", label: __("From Date"), fieldname: "from_date"},
 		{fieldtype:"Date", label: __("To Date"), fieldname: "to_date"},
 		{fieldtype:"Select", label: __("Range"), fieldname: "range",
@@ -79,7 +79,7 @@ erpnext.RegistrationAnalytics = frappe.views.TreeGridReport.extend({
 	prepare_data: function() {
 		var me = this;
 		if (!this.tl) {
-			this.tl = frappe.report_dump.data["Customer"]
+			this.tl = frappe.report_dump.data["Patient"]
 		}
 		if(!this.data || me.item_type != me.tree_type) {
 			if(me.tree_type=='User') {
