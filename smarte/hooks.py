@@ -36,21 +36,19 @@ website_context = {
 
 #doc_events = {
 #	"Sales Invoice": {
-#		"on_submit": "smarte.laboratory.doctype.lab_procedure.lab_procedure.create_lab_procedure_from_invoice_hook",
-#		"on_cancel": "smarte.laboratory.doctype.lab_procedure.lab_procedure.invoice_cancel_hook",
 #	}
 #}
 
 scheduler_events = {
 	"all": [
- 		"smarte.ip.doctype.service_task.service_task.create_task_from_schedule",
- 		"smarte.op.doctype.appointment.appointment.remind_appointment"
+ 		"smarte.medical.doctype.service_task.service_task.create_task_from_schedule",
+ 		"smarte.medical.doctype.appointment.appointment.remind_appointment"
  	],
  	"daily": [
- 		"smarte.op.doctype.appointment.appointment.set_open_appointments"
+ 		"smarte.medical.doctype.appointment.appointment.set_open_appointments"
  	],
 	"monthly": [
- 		"smarte.op.doctype.op_settings.op_settings.update_patient_age"
+ 		"smarte.medical.doctype.op_settings.op_settings.update_patient_age"
  	]
 }
 
