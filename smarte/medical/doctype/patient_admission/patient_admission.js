@@ -516,9 +516,17 @@ frappe.ui.form.on("Patient Admission", "patient",
 		        name: frm.doc.patient
 		    },
 		    callback: function (data) {
+					if(data.message.dob){
+						age = calculate_age(data.message.dob)
+					}else if (data.message.age_int){
+						age = data.message.age_int
+						if(data.message.age_as_on){
+							age = age+" as on "+data.message.age_as_on
+						}
+					}
+					frappe.model.set_value(frm.doctype,frm.docname, "patient_age", age)
 		    	frappe.model.set_value(frm.doctype,frm.docname, "patient_id", data.message.patient_id)
-				frappe.model.set_value(frm.doctype,frm.docname, "patient_age", data.message.age)
-				frappe.model.set_value(frm.doctype,frm.docname, "patient_sex", data.message.sex)
+					frappe.model.set_value(frm.doctype,frm.docname, "patient_sex", data.message.sex)
 		    }
 		})
 	}
@@ -539,3 +547,32 @@ frappe.ui.form.on("Patient Admission", "physician",
 		})
 	}
 });
+
+var calculate_age = function(dob){
+	today = new Date();
+	birthDate = new Date(dob);
+	age_yr = today.getFullYear() - birthDate.getFullYear();
+	today_m = today.getMonth()+1 //Month jan = 0
+	birth_m = birthDate.getMonth()+1 //Month jan = 0
+	m = today_m - birth_m;
+	d = today.getDate() - birthDate.getDate()
+
+	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+		age_yr--;
+	}
+	if (m < 0) {
+	 m = (12 + m);
+	}
+	if (d < 0) {
+		m--;
+		d = 31 + d;// 31 may varry with month Feb(28,29),Even Month(30) or Odd Month(31)
+	}
+	age_str = null
+	if(age_yr > 0)
+		age_str = age_yr+" Year(s), "
+	if(m > 0)
+		age_str = age_str+m+" Month(s), "
+	if(d > 0)
+		age_str = age_str+d+" Day(s)"
+	return age_str
+}
