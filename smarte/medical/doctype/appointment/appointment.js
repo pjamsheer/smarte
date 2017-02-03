@@ -22,10 +22,13 @@ frappe.ui.form.on('Appointment', {
 				btn_update_status(frm, "Open");
 			 } );
 		};
-		if(!frm.doc.__islocal && frappe.user.has_role("IP Physician") && frm.doc.status == "Open"){
+		if(!frm.doc.__islocal && (frappe.user.has_role("IP Physician")||frappe.user.has_role("OP Physician")) && frm.doc.status == "Open"){
 			frm.add_custom_button(__("Consultation"),function(){
 				btn_create_consultation(frm);
 			},"Create");
+			frm.add_custom_button(__('Vital Signs'), function() {
+				btn_create_vital_signs(frm);
+			 },"Create");
 		}
 		if(!frm.doc.__islocal && (frappe.user.has_role("OP Manager") || frappe.user.has_role("OP User"))){
 			if(frm.doc.invoiced == '1'){
@@ -75,6 +78,20 @@ var btn_create_consultation = function(frm){
 	frappe.call({
 		method:"smarte.medical.doctype.appointment.appointment.create_consultation",
 		args: {appointment: doc.name},
+		callback: function(data){
+			if(!data.exc){
+				var doclist = frappe.model.sync(data.message);
+				frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+			}
+		}
+	});
+}
+
+var btn_create_vital_signs = function(frm){
+	var doc = frm.doc;
+	frappe.call({
+		method:"smarte.medical.doctype.vital_signs.vital_signs.create_vital_signs",
+		args: {patient: doc.patient},
 		callback: function(data){
 			if(!data.exc){
 				var doclist = frappe.model.sync(data.message);
@@ -207,3 +224,56 @@ frappe.ui.form.on("Appointment", "physician",
 		})
 	}
 });
+
+frappe.ui.form.on("Appointment", "patient",
+    function(frm) {
+        if(frm.doc.patient){
+		frappe.call({
+		    "method": "frappe.client.get",
+		    args: {
+		        doctype: "Patient",
+		        name: frm.doc.patient
+		    },
+		    callback: function (data) {
+					if(data.message.dob){
+						age = calculate_age(data.message.dob)
+					}else if (data.message.age_int){
+						age = data.message.age_int
+						if(data.message.age_as_on){
+							age = age+" as on "+data.message.age_as_on
+						}
+					}
+					frappe.model.set_value(frm.doctype,frm.docname, "patient_age", age)
+		    }
+		})
+	}
+});
+
+var calculate_age = function(dob){
+	today = new Date();
+	birthDate = new Date(dob);
+	age_yr = today.getFullYear() - birthDate.getFullYear();
+	today_m = today.getMonth()+1 //Month jan = 0
+	birth_m = birthDate.getMonth()+1 //Month jan = 0
+	m = today_m - birth_m;
+	d = today.getDate() - birthDate.getDate()
+
+	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+		age_yr--;
+	}
+	if (m < 0) {
+	 m = (12 + m);
+	}
+	if (d < 0) {
+		m--;
+		d = 31 + d;// 31 may varry with month Feb(28,29),Even Month(30) or Odd Month(31)
+	}
+	age_str = null
+	if(age_yr > 0)
+		age_str = age_yr+" Year(s), "
+	if(m > 0)
+		age_str = age_str+m+" Month(s), "
+	if(d > 0)
+		age_str = age_str+d+" Day(s)"
+	return age_str
+}
