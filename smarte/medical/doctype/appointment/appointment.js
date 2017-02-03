@@ -26,10 +26,13 @@ frappe.ui.form.on('Appointment', {
 			frm.add_custom_button(__("Consultation"),function(){
 				btn_create_consultation(frm);
 			},"Create");
+		}
+		if(!frm.doc.__islocal && (frappe.user.has_role("Nursing User")||frappe.user.has_role("IP Physician")||frappe.user.has_role("OP Physician")) && frm.doc.status == "Open"){
 			frm.add_custom_button(__('Vital Signs'), function() {
 				btn_create_vital_signs(frm);
 			 },"Create");
 		}
+
 		if(!frm.doc.__islocal && (frappe.user.has_role("OP Manager") || frappe.user.has_role("OP User"))){
 			if(frm.doc.invoiced == '1'){
 				frm.add_custom_button(__('Invoice'), function() {
