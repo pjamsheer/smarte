@@ -16,28 +16,49 @@ frappe.ui.form.on("Patient", "dob", function(frm) {
   if(frm.doc.dob && !frm.doc.age){
     today = new Date();
     birthDate = new Date(frm.doc.dob);
-    age = today.getFullYear() - birthDate.getFullYear();
-    m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
+    if(today < birthDate){
+      msgprint("Please select a valid Date");
+      frappe.model.set_value(frm.doctype,frm.docname, "dob", null)
+    }else{
+      age_yr = today.getFullYear() - birthDate.getFullYear();
+      today_m = today.getMonth()+1 //Month jan = 0
+      birth_m = birthDate.getMonth()+1 //Month jan = 0
+      m = today_m - birth_m;
+      d = today.getDate() - birthDate.getDate()
+
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age_yr--;
+      }
+      if (m < 0 || m==0) {
+       m = (12 + m);
+      }
+      if (d < 0) {
+        m--;
+        d = 31 + d;// 31 may varry with month Feb(28,29),Even Month(30) or Odd Month(31)
+      }
+      age_str = null
+      if(age_yr > 0)
+        age_str = age_yr+" Year(s), "
+      if(m > 0)
+        age_str = age_str+m+" Month(s), "
+      if(d > 0)
+        age_str = age_str+d+" Day(s)"
+      frappe.model.set_value(frm.doctype,frm.docname, "age", age_str)
+      frm.set_df_property("age_int", "hidden", 1);
+      frm.set_df_property("age", "hidden", 0);
     }
-    frappe.model.set_value(frm.doctype,frm.docname, "age", age)
-    frm.set_df_property("age", "read_only", 1);
-  }else if(!frm.doc.age){
-    frm.set_df_property("age", "read_only", 0);
   }
 });
 
-frappe.ui.form.on("Patient", "age", function(frm) {
-  if(frm.doc.age){
+frappe.ui.form.on("Patient", "age_int", function(frm) {
+  if(frm.doc.age_int){
     today = new Date()
-    dob_yr = today.getFullYear() - frm.doc.age
-    //dob_str = dob_yr+"-01-01"
-    dob_month = today.getMonth()+1
-    dob_str = dob_yr+"-"+dob_month+"-"+today.getDate()
-    frappe.model.set_value(frm.doctype,frm.docname, "dob", new Date(dob_str))
-    frm.set_df_property("age", "read_only", 1);
-  }else{
-    frm.set_df_property("age", "read_only", 0);
+    frm.set_df_property("dob", "hidden", 1);
+    frm.set_df_property("age", "hidden", 1);
+    frm.set_df_property("age_as_on", "hidden", 0);
+    frm.set_df_property("age_int", "hidden", 0);
+    d = today.getDate();m = today.getMonth();y = today.getFullYear();
+    frappe.model.set_value(frm.doctype,frm.docname, "age_as_on", today)
+    frappe.model.set_value(frm.doctype,frm.docname, "age", frm.doc.age_int+" as on "+d+"-"+m+"-"+y)
   }
 });
