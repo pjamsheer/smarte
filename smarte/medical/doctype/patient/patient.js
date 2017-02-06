@@ -9,6 +9,11 @@ frappe.ui.form.on('Patient', {
  				frappe.set_route("medical_record");
  			 });
 		};
+    if(!frm.doc.__islocal && (frappe.user.has_role("Nursing User")||frappe.user.has_role("IP Physician")||frappe.user.has_role("OP Physician"))){
+			frm.add_custom_button(__('Vital Signs'), function() {
+				btn_create_vital_signs(frm);
+			 },"Create");
+		}
  }
 });
 
@@ -62,3 +67,17 @@ frappe.ui.form.on("Patient", "age_int", function(frm) {
     frappe.model.set_value(frm.doctype,frm.docname, "age", frm.doc.age_int+" as on "+d+"-"+m+"-"+y)
   }
 });
+
+var btn_create_vital_signs = function(frm){
+	var doc = frm.doc;
+	frappe.call({
+		method:"smarte.medical.doctype.vital_signs.vital_signs.create_vital_signs",
+		args: {patient: doc.name},
+		callback: function(data){
+			if(!data.exc){
+				var doclist = frappe.model.sync(data.message);
+				frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+			}
+		}
+	});
+}
