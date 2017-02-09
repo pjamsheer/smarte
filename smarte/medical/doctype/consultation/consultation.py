@@ -17,8 +17,7 @@ class Consultation(Document):
 		self.name = "-".join(filter(None,
 			[cstr(self.get(f)).strip() for f in ["consultation_date","patient"]]))
 
-		self.name = self.name + " ( " + "/".join(filter(None,
-			[cstr(self.get(f)).strip() for f in ["patient_age", "patient_sex"]])) + " ) "
+		self.name = self.name + " ( " +str(self.patient_sex)+ " ) "
 
 		self.name = self.name + "-".join(filter(None,
 			[cstr(self.get(f)).strip() for f in ["physician", "consultation_time"]]))
