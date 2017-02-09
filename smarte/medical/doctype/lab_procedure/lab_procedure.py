@@ -13,8 +13,7 @@ class LabProcedure(Document):
 		self.name = "-".join(filter(None,
 			[cstr(self.get(f)).strip() for f in ["test_name", "patient"]]))
 
-		self.name = self.name + " (" + "/".join(filter(None,
-			[cstr(self.get(f)).strip() for f in ["patient_age", "patient_sex"]])) + ")"
+		self.name = self.name + " ( " +str(self.patient_sex)+ " ) "
 
 		self.name = self.name + "/" +cstr(self.get("invoice")).strip()
 
