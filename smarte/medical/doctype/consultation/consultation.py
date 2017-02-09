@@ -10,6 +10,7 @@ from frappe.utils import cstr, getdate, get_time, math
 import time
 import datetime
 from datetime import timedelta
+from smarte.medical.doctype.patient_medical_record.patient_medical_record import delete_attachment, insert_attachment
 
 class Consultation(Document):
 	def autoname(self):
@@ -28,6 +29,12 @@ class Consultation(Document):
 		update_consultation_to_medical_record(self)
 		if(self.admitted):
 			schedule_task(self)
+		attachments = get_attachments(self)
+		if attachments:
+			delete_attachment("File", self.name)
+			for i in range(0,len(attachments)):
+				attachment = frappe.get_doc("File", attachments[i]['name'])
+				insert_attachment(attachment,self.patient)
 
 	def after_insert(self):
 		insert_consultation_to_medical_record(self)
@@ -36,6 +43,10 @@ class Consultation(Document):
 		physician = frappe.get_doc("Physician",self.physician)
 		if(frappe.session.user != physician.user_id):
 			frappe.throw(_("Submit only by created physician"))
+
+def get_attachments(doc):
+	return frappe.get_all("File", fields=["name"],
+		filters = {"attached_to_name": doc.name, "attached_to_doctype": doc.doctype})
 
 def setting_sales_invoice_fields(consultation):
 	sales_invoice = frappe.new_doc("Sales Invoice")
