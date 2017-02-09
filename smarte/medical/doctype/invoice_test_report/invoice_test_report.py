@@ -14,9 +14,7 @@ class InvoiceTestReport(Document):
 		self.name = " ".join(filter(None,
 			[cstr(self.get(f)).strip() for f in ["invoice", "patient"]]))
 
-		self.name = self.name + " (" + "/".join(filter(None,
-			[cstr(self.get(f)).strip() for f in ["patient_age", "patient_sex"]])) + ")"
-
+		self.name = self.name + " ( " +str(self.patient_sex)+ " ) "
 
 @frappe.whitelist()
 def mark_as_completed(status, name):
