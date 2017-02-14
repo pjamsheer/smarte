@@ -186,6 +186,14 @@ frappe.ui.form.on("Consultation", "patient",
 	}
 });
 
+me.frm.set_query("drug_code", "drug_prescription", function(doc, cdt, cdn) {
+		return {
+			filters: {
+				is_stock_item:'1'
+			}
+		};
+	});
+
 frappe.ui.form.on("Drug Prescription", {
 	drug_code:  function(frm, cdt, cdn) {
 		var child = locals[cdt][cdn]
@@ -194,7 +202,7 @@ frappe.ui.form.on("Drug Prescription", {
 				"method": "frappe.client.get",
 				args: {
 				    doctype: "Item",
-				    name: child.drug_code
+				    name: child.drug_code,
 				},
 				callback: function (data) {
 				frappe.model.set_value(cdt, cdn, 'drug_name',data.message.item_name)
