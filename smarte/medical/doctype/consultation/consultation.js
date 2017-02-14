@@ -194,6 +194,14 @@ me.frm.set_query("drug_code", "drug_prescription", function(doc, cdt, cdn) {
 		};
 	});
 
+me.frm.set_query("test_code", "test_prescription", function(doc, cdt, cdn) {
+		return {
+			filters: {
+				is_billable:'1'
+			}
+		};
+	});
+
 frappe.ui.form.on("Drug Prescription", {
 	drug_code:  function(frm, cdt, cdn) {
 		var child = locals[cdt][cdn]
