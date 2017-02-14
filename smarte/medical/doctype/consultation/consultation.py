@@ -193,18 +193,11 @@ def create_date_time_list(period, intvl_minutes, dosage):
 
 	while (time <= end_dt):
 		if(dosage):
-			if(dosage.dosage_morning>0):
-				mng = datetime.datetime.strptime(str(dosage.morning_time), "%H:%M:%S").time()
-				time = datetime.datetime.combine(today,mng)
-				times.append(time)
-			if(dosage.dosage_noon>0):
-				noon = datetime.datetime.strptime(str(dosage.noon_time), "%H:%M:%S").time()
-				time = datetime.datetime.combine(today,noon)
-				times.append(time)
-			if(dosage.dosage_evening>0):
-				eve = datetime.datetime.strptime(str(dosage.eve_time), "%H:%M:%S").time()
-				time = datetime.datetime.combine(today,eve)
-				times.append(time)
+			if(dosage.dosage_strenght):
+				for d_strenght in dosage.dosage_strenght:
+					ds_time = datetime.datetime.strptime(str(d_strenght.strength_time), "%H:%M:%S").time()
+					time = datetime.datetime.combine(today,ds_time)
+					times.append(time)
 			today = today + datetime.timedelta(minutes = intvl_minutes)
 			time = datetime.datetime.combine(today, datetime.datetime.min.time())
 		else:
