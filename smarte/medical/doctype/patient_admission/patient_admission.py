@@ -10,8 +10,11 @@ import time
 from frappe.utils import getdate, get_time
 
 class PatientAdmission(Document):
-	pass
-
+	def before_insert(self):
+		admission = frappe.db.sql("select name,status from `tabPatient Admission` where patient=%s and status != %s and status !=%s",(self.patient,"Discharged", "Cancelled"))
+		if(admission[0][0]):
+			frappe.throw("The patient already admitted or scheduled to admit")
+	
 @frappe.whitelist()
 def admit_and_allocate_patient(patient, admission, date_in, time_in, bed, facility_type, facility, expected_discharge):
 	allocate_facility(patient,admission,date_in,time_in,bed,facility_type, facility, expected_discharge,"Occupied",True)
