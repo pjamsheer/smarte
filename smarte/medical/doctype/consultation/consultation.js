@@ -7,9 +7,7 @@ frappe.ui.form.on('Consultation', {
 			{fieldname: 'drug_code', columns: 2},
 			{fieldname: 'drug_name', columns: 2},
 			{fieldname: 'dosage', columns: 2},
-			{fieldname: 'interval', columns: 2},
-			{fieldname: 'in_every', columns: 1},
-			{fieldname: 'period', columns: 1}
+			{fieldname: 'period', columns: 2}
 		];
 		frm.get_field('test_prescription').grid.editable_fields = [
 			{fieldname: 'test_code', columns: 2},
