@@ -171,7 +171,6 @@ def create_lab_procedure_from_create_invoice_btn(invoice):
 
 @frappe.whitelist()
 def create_lab_procedure_from_invoice(doc):
-	frappe.db.set_value("Sales Invoice", doc.name, "lab_procedure_created", 1)
 	#patient - custom field in sales invoice
 	patient = frappe.get_doc("Patient", doc.patient)
 	invoice_test_report = create_invoice_test_report(doc, patient)
@@ -187,8 +186,7 @@ def create_lab_procedure_from_invoice(doc):
 		collect_sample = 1
 
 	for item_line in doc.items:
-		template = frappe.db.get("Lab Test Template",{"item":item_line.item_code})
-
+		template = frappe.get_doc("Lab Test Template",{"item":item_line.item_code})
 		#skip the loop if there is no test_template for Item
 		if not (template):
 			continue
@@ -217,7 +215,6 @@ def create_lab_procedure_from_invoice(doc):
 
 			elif(template.test_template_type == 'Grouped'):
 				#iterate for each template in the group and create one result for all.
-
 				for test_group in template.test_groups:
 					#template_in_group = None
 					if(test_group.test_template):
