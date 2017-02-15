@@ -84,14 +84,6 @@ frappe.ui.form.on('Special Test Items', {
     }
 });
 
-//Child row deleteion cath here
-frappe.ui.form.on('Sensitivity Test Items', {
-    sensitivity_test_items_remove: function(frm) {
-        msgprint("Deletion is not permitted !");
-        cur_frm.reload_doc();
-    }
-});
-
 var status_update = function(frm){
 	var doc = frm.doc;
 	frappe.call({
