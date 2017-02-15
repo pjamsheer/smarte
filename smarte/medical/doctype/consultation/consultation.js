@@ -156,6 +156,27 @@ frappe.ui.form.on("Consultation", "physician",
 	}
 });
 
+frappe.ui.form.on("Consultation", "symptoms_select", function(frm) {
+	if(frm.doc.symptoms_select){
+		if(frm.doc.symptoms)
+			symptoms = frm.doc.symptoms + "\n" +frm.doc.symptoms_select
+		else
+			symptoms = frm.doc.symptoms_select
+		frappe.model.set_value(frm.doctype,frm.docname, "symptoms", symptoms)
+		frappe.model.set_value(frm.doctype,frm.docname, "symptoms_select", null)
+	}
+});
+frappe.ui.form.on("Consultation", "diagnosis_select", function(frm) {
+	if(frm.doc.diagnosis_select){
+		if(frm.doc.diagnosis)
+			diagnosis = frm.doc.diagnosis + "\n" +frm.doc.diagnosis_select
+		else
+			diagnosis = frm.doc.diagnosis_select
+		frappe.model.set_value(frm.doctype,frm.docname, "diagnosis", diagnosis)
+		frappe.model.set_value(frm.doctype,frm.docname, "diagnosis_select", null)
+	}
+});
+
 frappe.ui.form.on("Consultation", "patient",
     function(frm) {
         if(frm.doc.patient){
