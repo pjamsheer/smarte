@@ -57,6 +57,8 @@ def create_invoice_test_report(invoice, patient):
 	invoice_test_report.patient = patient.name
 	invoice_test_report.patient_age = patient.age
 	invoice_test_report.patient_sex = patient.sex
+	invoice_test_report.email = patient.email
+	invoice_test_report.mobile = patient.mobile
 	invoice_test_report.report_preference = patient.report_preference
 	return invoice_test_report
 
@@ -67,6 +69,8 @@ def create_lab_procedure(invoice, patient, template):
 	lab_procedure.patient = patient.name
 	lab_procedure.patient_age = patient.age
 	lab_procedure.patient_sex = patient.sex
+	lab_procedure.email = patient.email
+	lab_procedure.mobile = patient.mobile
 	lab_procedure.lab_test_type = template.lab_test_type
 	lab_procedure.internal_test = template.internal_test
 	lab_procedure.lab_procedure_department = template.lab_procedure_department
@@ -175,12 +179,6 @@ def create_lab_procedure_from_invoice(doc):
 	patient = frappe.get_doc("Patient", doc.patient)
 	invoice_test_report = create_invoice_test_report(doc, patient)
 
-	patient_email = frappe.db.get_value("Patient", patient.name, "email")
-	patient_mobile = frappe.db.get_value("Patient", patient.name, "mobile")
-
-	invoice_test_report.email = patient_email
-	invoice_test_report.mobile = patient_mobile
-
 	collect_sample = 0;
 	if(frappe.db.get_value("Laboratory Settings", None, "require_sample_collection") == "1"):
 		collect_sample = 1
@@ -192,8 +190,6 @@ def create_lab_procedure_from_invoice(doc):
 			continue
 
 		lab_procedure = create_lab_procedure(doc, patient, template)
-		lab_procedure.email = patient_email
-		lab_procedure.mobile = patient_mobile
 
 		if(template.manually_submit_procedure == 1):
 
