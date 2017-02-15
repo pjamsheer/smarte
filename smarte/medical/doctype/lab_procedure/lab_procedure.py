@@ -31,7 +31,7 @@ class LabProcedure(Document):
 
 	def on_cancel(self):
 		lab_test_procedure_result_status(self.name,"Cancelled")
-		dlete_lab_procedure_from_medical_record(self)
+		delete_lab_procedure_from_medical_record(self)
 		frappe.db.set_value("Lab Procedure",self.name,"approval_status",None)
 		self.reload()
 
@@ -316,7 +316,7 @@ def insert_lab_procedure_to_medical_record(doc):
 	medical_record.reference_owner = doc.owner
 	medical_record.save(ignore_permissions=True)
 
-def dlete_lab_procedure_from_medical_record(self):
+def delete_lab_procedure_from_medical_record(self):
 	medical_record_id = frappe.db.sql("select name from `tabPatient Medical Record` where 			reference_name=%s",(self.name))
 
 	if(medical_record_id[0][0]):
