@@ -35,6 +35,13 @@ class LabProcedure(Document):
 		frappe.db.set_value("Lab Procedure",self.name,"approval_status",None)
 		self.reload()
 
+	def on_update(self):
+		if(self.sensitivity_test_items):
+			sensitivity = sorted(self.sensitivity_test_items, key=lambda x: x.antibiotic_sensitivity)
+			for i, item in enumerate(sensitivity):
+				item.idx = i+1
+			self.sensitivity_test_items = sensitivity
+
 def lab_test_procedure_result_status(lab_procedure,status):
 	frappe.db.sql("""update `tabLab Test Procedure Result` set workflow=%s where lab_procedure=%s""",(status, lab_procedure))
 
