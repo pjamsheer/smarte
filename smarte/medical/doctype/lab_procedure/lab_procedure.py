@@ -191,7 +191,14 @@ def create_lab_procedure_from_invoice(doc):
 		collect_sample = 1
 
 	for item_line in doc.items:
-		template = frappe.get_doc("Lab Test Template",{"item":item_line.item_code})
+		template_exist = frappe.db.exists({
+			"doctype": "Lab Test Template",
+			"item": item_line.item_code
+			})
+		if template_exist :
+			template = frappe.get_doc("Lab Test Template",{"item":item_line.item_code})
+		else:
+			continue
 		#skip the loop if there is no test_template for Item
 		if not (template):
 			continue
