@@ -258,8 +258,8 @@ def create_lab_procedure_from_invoice(doc):
 		else:
 			lab_test_procedure_result.workflow = "Submitted"
 		lab_test_procedure_result.invoice = doc.name
-
-	invoice_test_report.save(ignore_permissions=True)
+	if(invoice_test_report.lab_test_presult):
+		invoice_test_report.save(ignore_permissions=True)
 
 
 # Call From hook to Create Test Result Procedure on Amend.
