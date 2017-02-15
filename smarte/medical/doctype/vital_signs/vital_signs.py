@@ -37,13 +37,13 @@ def update_vital_signs_to_medical_record(doc):
 		frappe.db.set_value("Patient Medical Record",medical_record_id[0][0],"subject",subject)
 
 def setting_subject_field(doc):
-	subject = "Vital Signs:: "
+	subject = " "
 	if(doc.temperature):
-		subject += "Pulse: \n"+ str(doc.temperature)+". "
+		subject += "Temperature: \n"+ str(doc.temperature)+". "
 	if(doc.pulse):
 		subject += "Pulse: \n"+ str(doc.pulse)+". "
 	if(doc.respiratory_rate):
-		subject += "RR: \n"+ str(doc.respiratory_rate)+". "
+		subject += "Respiratory Rate: \n"+ str(doc.respiratory_rate)+". "
 	if(doc.bp):
 		subject += "BP: \n"+ str(doc.bp)+". "
 	if(doc.bmi):
