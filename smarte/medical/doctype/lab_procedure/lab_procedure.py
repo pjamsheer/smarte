@@ -79,7 +79,6 @@ def create_lab_procedure(invoice, patient, template):
 	lab_procedure.email = patient.email
 	lab_procedure.mobile = patient.mobile
 	lab_procedure.lab_test_type = template.lab_test_type
-	lab_procedure.internal_test = template.internal_test
 	lab_procedure.lab_procedure_department = template.lab_procedure_department
 	lab_procedure.test_name = template.test_name
 	lab_procedure.test_group = template.test_group
@@ -205,72 +204,64 @@ def create_lab_procedure_from_invoice(doc):
 
 		lab_procedure = create_lab_procedure(doc, patient, template)
 
-		if(template.manually_submit_procedure == 1):
-
-			if(collect_sample == 1):
-				sample_collection = create_sample_collection(template, patient, doc)
-				if(sample_collection):
-					lab_procedure.sample = sample_collection.name
+		if(collect_sample == 1):
+			sample_collection = create_sample_collection(template, patient, doc)
+			if(sample_collection):
+				lab_procedure.sample = sample_collection.name
 
 
-			if(template.test_template_type == 'Single'):
-				create_normals(template, lab_procedure)
+		if(template.test_template_type == 'Single'):
+			create_normals(template, lab_procedure)
 
-			elif(template.test_template_type == 'Compound'):
-				create_compounds(template, lab_procedure, False)
+		elif(template.test_template_type == 'Compound'):
+			create_compounds(template, lab_procedure, False)
 
-			elif(template.test_template_type == 'Descriptive'):
-				create_specials(template, lab_procedure)
-
-
-			elif(template.test_template_type == 'Grouped'):
-				#iterate for each template in the group and create one result for all.
-				for test_group in template.test_groups:
-					#template_in_group = None
-					if(test_group.test_template):
-						template_in_group = frappe.get_doc("Lab Test Template",
-										test_group.test_template)
-
-					if(template_in_group):
-
-						if(template_in_group.test_template_type == 'Single'):
-							create_normals(template_in_group, lab_procedure)
+		elif(template.test_template_type == 'Descriptive'):
+			create_specials(template, lab_procedure)
 
 
-						elif(template_in_group.test_template_type == 'Compound'):
-							normal_heading = lab_procedure.append("normal_test_items")
-							normal_heading.test_name = template_in_group.test_name
-							normal_heading.require_result_value = 0
-							normal_heading.template = template_in_group.name
-							create_compounds(template_in_group, lab_procedure, True)
+		elif(template.test_template_type == 'Grouped'):
+			#iterate for each template in the group and create one result for all.
+			for test_group in template.test_groups:
+				#template_in_group = None
+				if(test_group.test_template):
+					template_in_group = frappe.get_doc("Lab Test Template",
+									test_group.test_template)
+
+				if(template_in_group):
+
+					if(template_in_group.test_template_type == 'Single'):
+						create_normals(template_in_group, lab_procedure)
+
+
+					elif(template_in_group.test_template_type == 'Compound'):
+						normal_heading = lab_procedure.append("normal_test_items")
+						normal_heading.test_name = template_in_group.test_name
+						normal_heading.require_result_value = 0
+						normal_heading.template = template_in_group.name
+						create_compounds(template_in_group, lab_procedure, True)
 
 
 
-						elif(template_in_group.test_template_type == 'Descriptive'):
-							special_heading = lab_procedure.append("special_test_items")
-							special_heading.test_name = template_in_group.test_name
-							special_heading.require_result_value = 0
-							special_heading.template = template_in_group.name
-							create_specials(template_in_group, lab_procedure)
+					elif(template_in_group.test_template_type == 'Descriptive'):
+						special_heading = lab_procedure.append("special_test_items")
+						special_heading.test_name = template_in_group.test_name
+						special_heading.require_result_value = 0
+						special_heading.template = template_in_group.name
+						create_specials(template_in_group, lab_procedure)
 
-					else:
-						normal = lab_procedure.append("normal_test_items")
-						normal.test_name = test_group.group_event
-						normal.test_uom = test_group.group_test_uom
-						normal.normal_range = test_group.group_test_normal_range
-						normal.require_result_value = 1
-						normal.template = template.name
+				else:
+					normal = lab_procedure.append("normal_test_items")
+					normal.test_name = test_group.group_event
+					normal.test_uom = test_group.group_test_uom
+					normal.normal_range = test_group.group_test_normal_range
+					normal.require_result_value = 1
+					normal.template = template.name
 
-			lab_procedure.save(ignore_permissions=True) # insert the result
-		else:
-			lab_procedure.save(ignore_permissions=True) # insert the result
-			lab_procedure.submit() # submit the result
+		lab_procedure.save(ignore_permissions=True) # insert the result
 		lab_test_procedure_result = invoice_test_report.append("lab_test_presult")
 		lab_test_procedure_result.lab_procedure = lab_procedure.name
-		if(template.manually_submit_procedure == 1):
-			lab_test_procedure_result.workflow = "Draft"
-		else:
-			lab_test_procedure_result.workflow = "Submitted"
+		lab_test_procedure_result.workflow = "Draft"
 		lab_test_procedure_result.invoice = doc.name
 	if(invoice_test_report.lab_test_presult):
 		invoice_test_report.save(ignore_permissions=True)
