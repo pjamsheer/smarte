@@ -79,7 +79,6 @@ def create_lab_procedure(invoice, patient, template):
 	lab_procedure.email = patient.email
 	lab_procedure.mobile = patient.mobile
 	lab_procedure.lab_test_type = template.lab_test_type
-	lab_procedure.lab_procedure_department = template.lab_procedure_department
 	lab_procedure.test_name = template.test_name
 	lab_procedure.test_group = template.test_group
 	lab_procedure.result_date = time.strftime("%y/%m/%d")
@@ -258,6 +257,8 @@ def create_lab_procedure_from_invoice(doc):
 					normal.require_result_value = 1
 					normal.template = template.name
 
+		elif(template.test_template_type == 'No Result'):
+			continue
 		lab_procedure.save(ignore_permissions=True) # insert the result
 		lab_test_procedure_result = invoice_test_report.append("lab_test_presult")
 		lab_test_procedure_result.lab_procedure = lab_procedure.name
